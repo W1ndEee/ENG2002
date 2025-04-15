@@ -23,13 +23,54 @@ class vecThreeD:
             return '{}{}'.format(sign, val)
         return '{}i{}j{}k'.format(self.a, formatresult(self.b), formatresult(self.c)) 
 
+"""Credit Start"""
+def login(): # Login function for registered users to log in and new users to register
+    f = open("logins.txt", "r")
+    fread = f.read()
+    fsplit = fread.split() # Split the file into a list of strings
+    usernames = [] # Create empty lists for usernames and passwords
+    passwords = []
+    for i in range(1, len(fsplit), 4): # Loop through stored logins file. Since [1] is the first username and every 4 elements after that is a username, we start at 1 and increment by 4
+        usernames.append(fsplit[i])
+    for j in range(3, len(fsplit), 4): # Same as above but for passwords. [3] is the first password.
+        passwords.append(fsplit[j])
+    f.close()
 
+    for k in range(3, 0, -1): # Loop for 3 attempts to log in
+        inputuser = input('Enter your username: ')
+        if inputuser in usernames: # Check if the input username is in the list of usernames
+            inputpass = input('Enter your password: ') # Username is found in list, ask for password
+            idx = usernames.index(inputuser) # Get the index of the username in the list of usernames
+            if inputpass == passwords[idx]: # Check if the input password matches the password at the index of the username
+                print('\nLogin successful. Welcome!\n')
+                return True # Return True to indicate successful login
+            else:
+                print('\nIncorrect password. You have {} attempts left.\n'.format(k-1)) # Incorrect password. Show number of attempts left.
+        else: # Username not found in list
+            print('\nNew user. Please register.\n')
+            inputpass = input('New password: ')
+            try:
+                ap = open("logins.txt", "a") # Open the logins file in append mode to add new username and password
+                ap.write("\nUsername: {} Password: {}".format(inputuser, inputpass)) # Add new username and password on a new line.
+                ap.close()
+                print('\nLogin information stored. Welcome!\n')
+                return True # Return True to indicate successful registration
+            except Exception as e: # Catch any exceptions that occur while trying to write to the file
+                print('Error storing login information:', e) 
+    
+    return False # Return False after 3 failed login attempts
+"""Credit End"""
 
 if __name__ == '__main__':
 
     exitflag = True # Flag to exit the program
-    while exitflag: # Loop until the user chooses to exit
-        while True:
+    while exitflag: # Loop until the user chooses to exit or login fails
+
+        exitflag = login() # Calls login function. Login successful returns True, Login failed returns False
+        if not exitflag: # If login fails, exit the program
+            break
+
+        while True: # Login successful, continue
             # Try to get the values for the first vector
             try:
                 print("Please enter the x(a), y(b), z(c) values for your 3D Vector")
