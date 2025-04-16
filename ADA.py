@@ -23,6 +23,33 @@ class vecThreeD:
             return '{}{}'.format(sign, val)
         return '{}i{}j{}k'.format(self.a, formatresult(self.b), formatresult(self.c)) 
 
+"""Disctinction Start"""    
+class vecAzm(vecThreeD): # Subclass of vecThreeD, has two new methods arctan and findAzm
+    """A 3D vector with with option to find zimuthal angle (Subclass of vecThreeD)"""
+    def arctan(self, z, t): # Method to calculate the arctan of z with t terms using the Taylor series expansion
+        if t >= 1: # Check if the number of terms is greater than or equal to 1
+            result = z - (z**3) / 3 # First term added since there is at least 1 terms
+            num = 5 # Initialize num to 5 since the next term will be z^5 / 5
+            for i in range(t-1): # t-1 because we already added the first term
+                if i % 2 == 0: # Even i means second, fourth, sixth, etc. terms
+                    result = result + (z**num) / num
+                elif i % 2 == 1: # Odd i means third, fifth, seventh, etc. terms
+                    result = result - (z**num) / num
+                num += 2 # Increment num by 2 for the next term
+        else: ## If the number of terms is less than 1 (e.g. 0, -1, -2), raise an error
+            raise AssertionError('Your number of terms should not be 0 or less than 0')
+        return result
+    
+    def findAzm(self, terms): # Method to find the azimuthal angle
+        z = self.b / self.a # Calculate z as b/a from the user's vector
+        if z < -1 or z > 1: # Check if z is within the valid range (-1 <= z <= 1), if not, raise an error
+            raise AssertionError('The input argument for the method is out of the valid range (b/a must be between -1 and 1)')
+        elif terms <= 0: # Check if the number of terms is less than or equal to 0, if so, raise an error
+            raise AssertionError('Your number of terms should not be 0 or less than 0')
+        else: # All checks are good. Return the azimuthal angle with 3 decimal places
+            return 'Azimuth: {:.3f}'.format(self.arctan(z, terms)) # Call arctan function with z and user's terms
+"""Distinction End"""
+
 """Credit Start"""
 def login(): # Login function for registered users to log in and new users to register
     f = open("logins.txt", "r")
@@ -77,23 +104,37 @@ if __name__ == '__main__':
                 a = float(input("a = "))
                 b = float(input("b = "))
                 c = float(input("c = "))
-                vector = vecThreeD(a, b, c) # Vector 1 initialized
+                vector = vecAzm(a, b, c) # Vector 1 initialized
                 break # Break out of the loop if no exception is raised
             except ValueError as e: # Catch the exception if the user enters a non-numeric value or all values are zero
                 print(f'{e}. Please try again\n')
 
         while True:
             # Options menu, only option B is implemented since we are group 16.
-            print("\nPlease choose one of these options (We are group 16, option b)")
-            print("a. Addition")
-            print("b. Substraction")
-            print("c. Product")
-            print("d. Cross-Product")
-            print("e. Magnitude-Comparison")
+            print("\nPlease choose one of these options (We are group 16, option c)")
+            print("a. Azimuthal Angle")
+            print("b. Addition")
+            print("c. Substraction")
+            print("d. Product")
+            print("e. Cross-Product")
+            print("f. Magnitude-Comparison")
             print("q. Quit")
             op = input("Option = ")
-            if(op == "b" or op == "B"):
-                # User chooses B for subtraction
+
+            if(op == "a" or op == "A"):
+                # User chooses A for Azimuthal angle calculation
+                while True:
+                    # Try to get the number of terms for the Azimuthal angle calculation
+                    try:
+                        print("\nPlease enter the number of terms for the azimuthal angle calculation (Should be greater than 0)")
+                        terms = int(input("Number of terms = "))
+                        print('\n{}'.format(vector.findAzm(terms))) # Call the findAzm method to calculate the azimuthal angle
+                        break
+                    except Exception as e: # Handle any errors in the process
+                        print('{}. Please try again'.format(e))
+
+            elif(op == "c" or op == "C"):
+                # User chooses C for subtraction
                 while True:
                     # Try to get the values for the second vector
                     try:
@@ -108,14 +149,14 @@ if __name__ == '__main__':
                 
                 #Display the result
                 resultvector = vector.sub() # Store the result of the subtraction in a new vector
-                print('\nResult: {} = {}\n'.format(vector, resultvector.result())) # Print result. Vector is the operation itself, resultvector is the result of the operation
-                break
+                print('\nResult: {} = {}'.format(vector, resultvector.result())) # Print result. Vector is the operation itself, resultvector is the result of the operation
 
             elif(op == 'q' or op == 'Q'):
                 # User chooses to quit the program
                 print('\nThank you for using the program. Goodbye!')
                 exitflag = False # Set the exit flag to false to exit the program
                 break
+            
             else:
                 print("Invalid option. Please try again") # Invalid option, prompt the user to try again
 
