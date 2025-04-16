@@ -117,6 +117,6 @@ if __name__ == '__main__':
                 exitflag = False # Set the exit flag to false to exit the program
                 break
             else:
-                print("Please try again") # Invalid option, prompt the user to try again
+                print("Invalid option. Please try again") # Invalid option, prompt the user to try again
 
             
